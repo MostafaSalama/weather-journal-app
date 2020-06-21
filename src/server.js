@@ -11,9 +11,7 @@ const cors = require('cors');
 const app = express();
 
 // Setup empty JS object to act as endpoint for all routes
-projectData = {
-	file : "What is that "
-};
+let projectData = {};
 
 /* Middleware*/
 //Here we are configuring express to use body-parser as middle-ware.
@@ -26,13 +24,20 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cors());
 
 // Initialize the main project folder
-app.use(express.static(path.join(__dirname,'website')));
+app.use(express.static(path.join(__dirname, 'website')));
 
 // router to get all the project data
 
-app.get('/data',(req,res)=>{
-	res.json(projectData) ;
-})
+app.get('/data', (req, res) => {
+	res.json(projectData);
+});
+
+// route to post data 
+app.post('/data', (req, res) => {
+	const { temperature, date, userResponse } = req.body;
+	projectData = { temperature, date, userResponse };
+	res.json({success:true});
+});
 // Setup Server
 const server = http.createServer(app);
 const port = process.env.PORT || 3000;
