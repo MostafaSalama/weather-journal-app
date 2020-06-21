@@ -32,7 +32,7 @@ app.get('/data', (req, res) => {
 	res.json(projectData);
 });
 
-// route to post data 
+// route to post data
 app.post('/data', (req, res) => {
 	const { temperature, date, userResponse } = req.body;
 	projectData = { temperature, date, userResponse };
