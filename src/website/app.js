@@ -24,13 +24,14 @@ document.addEventListener('DOMContentLoaded', () => {
 		try {
 			// userInput
 			const { zipCode, userResponse } = getUserInput();
-			// validate the inputs 
+			// validate the inputs
 			if (!zipCode || !userResponse) {
 				console.warn('please provide correct inputs');
 				return;
 			}
 			// request data from the openWeather and returns it
 			const dataFromWeatherAPI = await getWeatherData(zipCode, userResponse);
+
 			// send the data to the server api endpoint
 			const dataToServer = await postDataToServer(dataFromWeatherAPI);
 
@@ -45,9 +46,9 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 
 	function updateUI({ date, userResponse, temperature }) {
-		dateElement.innerHTML = date;
-		tempElement.innerHTML = temperature;
-		contentElement.innerHTML = userResponse;
+		dateElement.innerHTML = `<span>Date: </span> ${date}`;
+		tempElement.innerHTML = `<span>Temp: </span> ${temperature}` ;
+		contentElement.innerHTML = `<span>Feelings: </span> ${userResponse}`;
 	}
 	function getUserInput() {
 		const zipCode = document.getElementById('zip').value;
