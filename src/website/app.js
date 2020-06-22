@@ -45,11 +45,22 @@ document.addEventListener('DOMContentLoaded', () => {
 		}
 	}
 
+    /**
+     * update the current entry elements
+     * @param date
+     * @param userResponse
+     * @param temperature
+     */
 	function updateUI({ date, userResponse, temperature }) {
 		dateElement.innerHTML = `<span>Date: </span> ${date}`;
-		tempElement.innerHTML = `<span>Temp: </span> ${temperature}` ;
+		tempElement.innerHTML = `<span>Temp: </span> ${temperature}`;
 		contentElement.innerHTML = `<span>Feelings: </span> ${userResponse}`;
 	}
+
+    /**
+     * get the user input from input and text area element
+     * @returns {{zipCode: *, userResponse: *}}
+     */
 	function getUserInput() {
 		const zipCode = document.getElementById('zip').value;
 		const userResponse = document.getElementById('feelings').value;
@@ -60,16 +71,30 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 });
 
+/**
+ * returns the current date in this format month.day.year
+ * @returns {string}
+ */
 function getCurrentDate() {
 	const d = new Date();
 	return d.getMonth() + '.' + d.getDate() + '.' + d.getFullYear();
 }
 
+/**
+ * send request to the weather api and return
+ * the date and the temperature and the userResponse of the
+ * current user inputs
+ * @param zipCode {string}
+ * @param userResponse {string}
+ * @returns {Promise<{date: string, temperature: *, userResponse: *}>}
+ */
 async function getWeatherData(zipCode, userResponse) {
 	// the url to request
 	let url = baseURL + zipCode + `&appid=${apiKey}`;
 	try {
 		const response = await fetch(url);
+		// sometimes the response will be in json
+        // but you have to make sure its 200 status code (ok)
 		if (response.ok) {
 			const data = await response.json();
 			return {
@@ -82,6 +107,12 @@ async function getWeatherData(zipCode, userResponse) {
 		throw e;
 	}
 }
+
+/**
+ * send a GET request to the server endpoint
+ * and get the project dat from it
+ * @returns {Promise<any>}
+ */
 async function getDataFromServer() {
 	try {
 		const serverResponse = await fetch(apiEndpoint);
@@ -90,6 +121,12 @@ async function getDataFromServer() {
 		throw e;
 	}
 }
+
+/**
+ * send a POST request and update the data in the server apiEndpoint
+ * @param data
+ * @returns {Promise<any>}
+ */
 async function postDataToServer(data) {
 	try {
 		const response = await fetch(apiEndpoint, {
