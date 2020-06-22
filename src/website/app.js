@@ -3,41 +3,91 @@
 const apiKey = '76f1aeec7d3a59e992ee01cc42c88559';
 const baseURL = 'http://api.openweathermap.org/data/2.5/weather?zip=';
 // API Endpoint on the server side to get and update the data
-const apiEndpoint = '/data' ;
+const apiEndpoint = '/data';
 
+document.addEventListener('DOMContentLoaded', () => {
+	// generate button
+	const generateButton = document.getElementById('generate');
 
-// getWeatherData(80014)
-getDataFromServer();
+	// entry elements
+
+	// date of the new entry
+	const dateElement = document.getElementById('date');
+	// temperature element
+	const tempElement = document.getElementById('temp');
+	// content of the user feelings
+	const contentElement = document.getElementById('content');
+
+	generateButton.addEventListener('click', generateNewEntry);
+
+	async function generateNewEntry() {
+		try {
+			// userInput
+			const zipCode = document.getElementById('zip').value;
+			const userResponse = document.getElementById('feelings').value;
+
+			// request data from the openWeather and returns it
+			const dataFromWeatherAPI = await getWeatherData(zipCode, userResponse);
+			// send the data to the server api endpoint
+			const dataToServer = await postDataToServer(dataFromWeatherAPI);
+
+			// get the data from the server api endpoint
+			const dataFromServer = await getDataFromServer();
+
+			updateUI(dataFromServer);
+		} catch (e) {
+			console.log(e);
+		}
+	}
+
+	function updateUI({ date, userResponse, temperature }) {
+		dateElement.innerHTML = date;
+		tempElement.innerHTML = temperature;
+		contentElement.innerHTML = userResponse;
+	}
+});
+
 function getCurrentDate() {
-    const d = new Date() ;
-    return d.getMonth() + '.' + d.getDate() + '.' + d.getFullYear()
+	const d = new Date();
+	return d.getMonth() + '.' + d.getDate() + '.' + d.getFullYear();
 }
 
-async function getWeatherData(zipCode,userResponse) {
-    // the url to request
-    let url = baseURL + zipCode + `&appid=${apiKey}` ;
-   try{
-       const response = await fetch(url) ;
-       if (response.ok){
-           const data = await response.json() ;
-           return {
-               date : getCurrentDate(),
-               temperature:data.main.temp,
-               userResponse
-           }
-       }
-   }
-   catch (e) {
-       console.log(e) ;
-   }
+async function getWeatherData(zipCode, userResponse) {
+	// the url to request
+	let url = baseURL + zipCode + `&appid=${apiKey}`;
+	try {
+		const response = await fetch(url);
+		if (response.ok) {
+			const data = await response.json();
+			return {
+				date: getCurrentDate(),
+				temperature: data.main.temp,
+				userResponse,
+			};
+		}
+	} catch (e) {
+		throw e;
+	}
 }
 async function getDataFromServer() {
-    try {
-        const serverResponse  = await fetch(apiEndpoint);
-        const data = await serverResponse.json();
-        console.log(data) ;
-    }
-    catch (e) {
-        console.log(e) ;
-    }
+	try {
+		const serverResponse = await fetch(apiEndpoint);
+		return await serverResponse.json();
+	} catch (e) {
+		throw e;
+	}
+}
+async function postDataToServer(data) {
+	try {
+		const response = await fetch(apiEndpoint, {
+			method: 'post',
+			body: JSON.stringify(data),
+			headers: {
+				'Content-Type': 'application/json',
+			},
+		});
+		return await response.json();
+	} catch (e) {
+		throw e;
+	}
 }
