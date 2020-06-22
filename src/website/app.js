@@ -23,9 +23,12 @@ document.addEventListener('DOMContentLoaded', () => {
 	async function generateNewEntry() {
 		try {
 			// userInput
-			const zipCode = document.getElementById('zip').value;
-			const userResponse = document.getElementById('feelings').value;
-
+			const { zipCode, userResponse } = getUserInput();
+			// validate the inputs 
+			if (!zipCode || !userResponse) {
+				console.warn('please provide correct inputs');
+				return;
+			}
 			// request data from the openWeather and returns it
 			const dataFromWeatherAPI = await getWeatherData(zipCode, userResponse);
 			// send the data to the server api endpoint
@@ -34,6 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
 			// get the data from the server api endpoint
 			const dataFromServer = await getDataFromServer();
 
+			// update the ui html elements
 			updateUI(dataFromServer);
 		} catch (e) {
 			console.log(e);
@@ -44,6 +48,14 @@ document.addEventListener('DOMContentLoaded', () => {
 		dateElement.innerHTML = date;
 		tempElement.innerHTML = temperature;
 		contentElement.innerHTML = userResponse;
+	}
+	function getUserInput() {
+		const zipCode = document.getElementById('zip').value;
+		const userResponse = document.getElementById('feelings').value;
+		return {
+			zipCode,
+			userResponse,
+		};
 	}
 });
 
